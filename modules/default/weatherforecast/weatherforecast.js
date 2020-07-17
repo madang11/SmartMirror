@@ -11,7 +11,7 @@ Module.register("weatherforecast", {
 		locationID: false,
 		appid: "",
 		units: config.units,
-		maxNumberOfDays: 7,
+		maxNumberOfDays: 40,
 		showRainAmount: false,
 		updateInterval: 10 * 60 * 1000, // every 10 minutes
 		animationSpeed: 1000,
@@ -28,7 +28,7 @@ Module.register("weatherforecast", {
 
 		apiVersion: "2.5",
 		apiBase: "https://api.openweathermap.org/data/",
-		forecastEndpoint: "forecast/daily",
+		forecastEndpoint: "forecast",
 
 		appendLocationNameToHeader: true,
 		calendarClass: "calendar",
@@ -254,6 +254,7 @@ Module.register("weatherforecast", {
 				if (this.status === 200) {
 					self.processWeather(JSON.parse(this.response));
 				} else if (this.status === 401) {
+					Log.error(self.name + ": Could not load weather, retrying.");
 					self.updateDom(self.config.animationSpeed);
 
 					if (self.config.forecastEndpoint === "forecast/daily") {
@@ -294,7 +295,7 @@ Module.register("weatherforecast", {
 			return;
 		}
 
-		params += "&cnt=" + (this.config.maxNumberOfDays < 1 || this.config.maxNumberOfDays > 17 ? 7 : this.config.maxNumberOfDays);
+		params += "&cnt=" + (this.config.maxNumberOfDays < 1 || this.config.maxNumberOfDays > 40 ? 7 : this.config.maxNumberOfDays);
 
 		params += "&units=" + this.config.units;
 		params += "&lang=" + this.config.lang;
@@ -373,7 +374,6 @@ Module.register("weatherforecast", {
 			}
 		}
 
-		//Log.log(this.forecast);
 		this.show(this.config.animationSpeed, { lockString: this.identifier });
 		this.loaded = true;
 		this.updateDom(this.config.animationSpeed);
